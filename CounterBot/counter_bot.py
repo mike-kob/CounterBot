@@ -58,10 +58,10 @@ def start_bot():
     dp.add_handler(CallbackQueryHandler(callback_handler))
     dp.add_handler(MessageHandler(Filters.text, message_handler))
 
-    # updater.start_webhook(listen="0.0.0.0",
-    #                       port=int(port),
-    #                       url_path=TOKEN)
-    # updater.bot.setWebhook("https://{}.herokuapp.com/{}".format(APP_NAME, TOKEN))
-    # updater.idle()
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(port),
+                          url_path=TOKEN)
+    updater.bot.setWebhook("https://{}.herokuapp.com/{}".format(APP_NAME, TOKEN))
+    updater.idle()
 
-    updater.start_polling()
+    # updater.start_polling()
