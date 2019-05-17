@@ -1,6 +1,6 @@
 import psycopg2
 
-from models import User
+from models import User, Counter
 from settings import AUTH_STRING
 
 
@@ -94,6 +94,7 @@ def get_user(user_id: str) -> User:
         res = cur.fetchone()
         if res is not None:
             out = User(res[0], res[1], res[2])
+
         return out
 
     except (Exception, psycopg2.DatabaseError) as error:

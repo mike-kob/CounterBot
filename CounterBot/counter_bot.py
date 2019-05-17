@@ -23,20 +23,14 @@ def callback_handler(bot, update):
 
     if user.status == STATUS.count:
         commands.count_process(bot, update, user)
+    elif user.status == STATUS.edit:
+        commands.edit_process(bot, update, user)
+    elif user.status == STATUS.choose_edit_action:
+        commands.choose_edit_process(bot, update, user)
+    elif user.status == STATUS.confirm_delete_action:
+        commands.confirm_delete_process(bot, update, user)
     else:
         pass
-
-
-def incoming_posts(update, context):
-    pass
-    # msg = update.message
-    # if msg.forward_from_chat is not None:
-    #     d = msg.date.strftime("%Y-%m-%dT%H:%M:%S")
-    #     ch_username = ('@' + msg.forward_from_chat.username).lower()
-    #     text = msg.text or msg.caption
-    #
-    #     message_dao.insert_message(msg.message_id, ch_username, msg.forward_from_message_id, d,
-    #                                text)
 
 
 def start_bot():
@@ -54,14 +48,15 @@ def start_bot():
     dp.add_handler(CommandHandler('start', commands.start))
     dp.add_handler(CommandHandler('add_counter', commands.add_counter))
     dp.add_handler(CommandHandler('count', commands.count))
+    dp.add_handler(CommandHandler('edit', commands.edit))
 
     dp.add_handler(CallbackQueryHandler(callback_handler))
     dp.add_handler(MessageHandler(Filters.text, message_handler))
+    #
+    # updater.start_webhook(listen="0.0.0.0",
+    #                       port=int(port),
+    #                       url_path=TOKEN)
+    # updater.bot.setWebhook("https://{}.herokuapp.com/{}".format(APP_NAME, TOKEN))
+    # updater.idle()
 
-    updater.start_webhook(listen="0.0.0.0",
-                          port=int(port),
-                          url_path=TOKEN)
-    updater.bot.setWebhook("https://{}.herokuapp.com/{}".format(APP_NAME, TOKEN))
-    updater.idle()
-
-    # updater.start_polling()
+    updater.start_polling()

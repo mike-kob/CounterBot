@@ -104,3 +104,77 @@ def get_user_counters(user: User) -> List[Counter]:
     finally:
         if conn is not None:
             conn.close()
+
+
+def get_current_counter(user: User) -> Counter:
+    sql_check = """
+          SELECT counter_id, name, value
+          FROM counter
+          WHERE counter_id IN (SELECT cur_counter_id
+                                FROM "user"
+                                WHERE "user".user_id=%s);
+    """
+
+    conn = None
+    try:
+        conn = psycopg2.connect(AUTH_STRING)
+
+        cur = conn.cursor()
+
+        cur.execute(sql_check, (user.user_id,))
+
+        row = cur.fetchone()
+        return Counter(row[0], row[1], user, row[2])
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print('get_current_counter:', error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+def save_current_counter(user: User, counter: Counter) -> None:
+    sql = """
+                UPDATE "user"
+                SET cur_counter_id = %s
+                WHERE user_id=%s;
+            """
+
+    conn = None
+    try:
+        conn = psycopg2.connect(AUTH_STRING)
+
+        cur = conn.cursor()
+
+        cur.execute(sql, [counter.counter_id, user.user_id])
+        conn.commit()
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print('save_current_counter:', error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+def delete_counter(counter: Counter) -> None:
+    sql = """
+                DELETE FROM counter
+                WHERE counter_id=%s;
+            """
+
+    conn = None
+    try:
+        conn = psycopg2.connect(AUTH_STRING)
+
+        cur = conn.cursor()
+
+        cur.execute(sql, (counter.counter_id,))
+        conn.commit()
+        cur.close()
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print('delete_counter:', error)
+    finally:
+        if conn is not None:
+            conn.close()
